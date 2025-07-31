@@ -157,8 +157,11 @@ class CameraService: NSObject, ObservableObject {
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        // This will be used for ML processing in the next phase
-        // For now, we just ensure the delegate is properly implemented
+        // Send frame to composition analysis service for ML processing
+        NotificationCenter.default.post(
+            name: NSNotification.Name("NewCameraFrame"),
+            object: sampleBuffer
+        )
     }
 }
 

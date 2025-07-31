@@ -5,15 +5,18 @@ import AVFoundation
 @MainActor
 class CameraViewModel: ObservableObject {
     @Published var cameraService = CameraService()
+    @Published var compositionAnalysisService = CompositionAnalysisService()
     @Published var isShowingCamera = false
     @Published var selectedAspectRatio: CameraService.AspectRatio = .sixteenByNine
     @Published var isCapturing = false
     @Published var showPermissionAlert = false
+    @Published var isMLAnalysisEnabled = true
     
     private var cancellables = Set<AnyCancellable>()
     
     init() {
         setupBindings()
+        setupMLAnalysis()
     }
     
     private func setupBindings() {
@@ -66,5 +69,32 @@ class CameraViewModel: ObservableObject {
     
     func requestCameraPermission() {
         cameraService.checkCameraPermission()
+    }
+    
+    private func setupMLAnalysis() {
+        // Listen for camera frames and pass them to ML analysis
+        NotificationCenter.default.publisher(for: NSNotification.Name("NewCameraFrame"))
+            .compactMap { $0.object as? CMSampleBuffer }
+            .receive(on: DispatchQueue.global(qos: .userInitiated))
+            .sink { [weak self] sampleBuffer in
+                guard let self = self, self.isMLAnalysisEnabled else { return }
+                self.compositionAnalysisService.analyzeFrame(sampleBuffer)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func toggleMLAnalysis() {
+        isMLAnalysisEnabled.toggle()
+        if !isMLAnalysisEnabled {
+            compositionAnalysisService.resetAnalysis()
+        }
+    }
+    
+    func getCurrentRecommendation() -> CompositionType {
+        return compositionAnalysisService.recommendedComposition
+    }
+    
+    func getConfidenceScore() -> Float {
+        return compositionAnalysisService.confidenceScore
     }
 }

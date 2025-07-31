@@ -42,6 +42,16 @@ struct CameraView: View {
                     
                     Spacer()
                     
+                    // ML Analysis Toggle
+                    Button(action: { viewModel.toggleMLAnalysis() }) {
+                        Image(systemName: viewModel.isMLAnalysisEnabled ? "brain" : "brain.slash")
+                            .font(.title3)
+                            .foregroundColor(viewModel.isMLAnalysisEnabled ? .green : .white)
+                            .padding()
+                            .background(Color.black.opacity(0.6))
+                            .clipShape(Circle())
+                    }
+                    
                     // Grid Toggle
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -70,10 +80,25 @@ struct CameraView: View {
                 }
                 .padding()
                 
-                // Grid Selector (center-left)
+                // Grid Selector and ML Recommendation
                 HStack {
-                    GridSelectorView(selectedComposition: $selectedComposition)
-                        .padding(.leading)
+                    VStack(alignment: .leading, spacing: 8) {
+                        GridSelectorView(selectedComposition: $selectedComposition)
+                        
+                        // ML Recommendation Display
+                        if viewModel.isMLAnalysisEnabled {
+                            MLRecommendationView(
+                                recommendedComposition: viewModel.compositionAnalysisService.recommendedComposition,
+                                confidence: viewModel.compositionAnalysisService.confidenceScore,
+                                isAnalyzing: viewModel.compositionAnalysisService.isAnalyzing,
+                                onApplyRecommendation: { recommendation in
+                                    selectedComposition = recommendation
+                                }
+                            )
+                        }
+                    }
+                    .padding(.leading)
+                    
                     Spacer()
                 }
                 
