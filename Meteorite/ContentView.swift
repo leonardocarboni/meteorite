@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showCamera = false
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -23,7 +25,7 @@ struct ContentView: View {
                 Spacer()
                 
                 Button(action: {
-                    // Camera view will be implemented here
+                    showCamera = true
                 }) {
                     HStack {
                         Image(systemName: "camera")
@@ -40,6 +42,9 @@ struct ContentView: View {
             }
             .navigationTitle("Meteorite")
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView()
         }
     }
 }
