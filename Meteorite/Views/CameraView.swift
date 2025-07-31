@@ -106,10 +106,34 @@ struct CameraView: View {
                 
                 // Bottom Controls
                 HStack {
+                    // Last captured photo thumbnail
+                    if let lastImage = viewModel.cameraService.lastCapturedImage {
+                        Button(action: {
+                            // Could navigate to photo review/gallery view
+                        }) {
+                            Image(uiImage: lastImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white, lineWidth: 2)
+                                )
+                        }
+                    } else {
+                        // Placeholder
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.clear)
+                            .frame(width: 50, height: 50)
+                    }
+                    
                     Spacer()
                     
                     // Capture Button
-                    Button(action: { viewModel.capturePhoto() }) {
+                    Button(action: { 
+                        viewModel.capturePhoto(with: selectedComposition)
+                    }) {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
@@ -119,10 +143,31 @@ struct CameraView: View {
                                 .stroke(Color.black, lineWidth: 2)
                                 .frame(width: 60, height: 60)
                             
-                            if viewModel.isCapturing {
-                                Circle()
-                                    .fill(Color.red)
-                                    .frame(width: 50, height: 50)
+                            // Capture status indicator
+                            Group {
+                                switch viewModel.cameraService.captureStatus {
+                                case .idle:
+                                    Image(systemName: "camera")
+                                        .font(.title2)
+                                        .foregroundColor(.black)
+                                case .capturing:
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                case .processing:
+                                    Image(systemName: "gear")
+                                        .font(.title2)
+                                        .foregroundColor(.blue)
+                                        .rotationEffect(.degrees(viewModel.isCapturing ? 360 : 0))
+                                        .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: viewModel.isCapturing)
+                                case .saved:
+                                    Image(systemName: "checkmark")
+                                        .font(.title2)
+                                        .foregroundColor(.green)
+                                case .failed:
+                                    Image(systemName: "xmark")
+                                        .font(.title2)
+                                        .foregroundColor(.red)
+                                }
                             }
                         }
                     }

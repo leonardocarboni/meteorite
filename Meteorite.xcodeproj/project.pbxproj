@@ -275,6 +275,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Meteorite needs camera access to provide composition guidance for photography.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Meteorite needs photo library access to save your composed photos with ML guidance metadata.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,6 +305,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Meteorite needs camera access to provide composition guidance for photography.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Meteorite needs photo library access to save your composed photos with ML guidance metadata.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

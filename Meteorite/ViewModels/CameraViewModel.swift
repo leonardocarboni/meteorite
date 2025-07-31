@@ -55,16 +55,24 @@ class CameraViewModel: ObservableObject {
         cameraService.switchAspectRatio()
     }
     
-    func capturePhoto() {
+    func capturePhoto(with compositionType: CompositionType) {
         guard !isCapturing else { return }
         
         isCapturing = true
-        cameraService.capturePhoto()
+        let confidence = compositionAnalysisService.confidenceScore
+        cameraService.capturePhoto(compositionType: compositionType, confidence: confidence)
         
-        // Reset capturing state after a short delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.isCapturing = false
-        }
+        // Monitor capture status
+        cameraService.$captureStatus
+            .sink { [weak self] status in
+                switch status {
+                case .idle, .saved, .failed:
+                    self?.isCapturing = false
+                case .capturing, .processing:
+                    break // Keep capturing state true
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func requestCameraPermission() {
